@@ -1883,51 +1883,86 @@ function addGrid(items) {
 
 function showWelcome() {
   addMsg('Herzlich willkommen bei ArmoSystems! 👋<br>Wie kann ich Ihnen heute helfen?', 'bot');
-  setTimeout(() => {
-    addOptions([
-      { label: '📋 Termin buchen / Anfrage stellen', action: () => {
-        askAI('Ich möchte einen Termin buchen oder eine Anfrage stellen');
-      }},
-      { label: '🚨 Notfall / Störung melden', action: () => {
-        addMsg('Bitte kontaktieren Sie uns sofort:<br><strong>📞 +49 162 495 4485</strong><br>Wir sind 24/7 für Sie da!', 'bot');
-      }},
-      { label: '💬 Frage zu Leistungen & Preisen', action: () => {
-        addMsg('Zu welchem Bereich haben Sie Fragen?', 'bot');
-        setTimeout(() => {
-          addGrid(['Netzwerk & Server','Virtualisierung','Firewall & Security','Reparatur & Support','Cloud & Microsoft','KI-Integration','Softwareentwicklung','Webseiten & Online-Auftritte','IT-Beratung','Preise & Pakete','Sonstiges']);
-        }, 400);
-      }},
-    ]);
-  }, 600);
+  setTimeout(() => { showMainMenu(); }, 600);
 }
 
-async function askAI(userMsg) {
-  const typing = addTyping();
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
-        system: `Du bist der freundliche Assistent von ArmoSystems, einem IT-Unternehmen in Finnentrop (Sauerland, NRW).
-Antworte kurz, freundlich und professionell auf Deutsch. Nutze bei Listen Aufzählungspunkte mit "- " am Anfang jeder Zeile. Keine langen Absätze.
-Infos: Inhaber Armen Hovsepyan (Wirtschaftsinformatiker B.Sc.), Tel: +49 162 495 4485, Email: armen.hovsepyan@armosystems.de, Adresse: Keplerweg 4, 57413 Finnentrop.
-Leistungen: Netzwerk, Server, Virtualisierung, Firewall (Sophos, FortiGate, pfSense), Reparatur, IT-Beratung, Softwareentwicklung, Webseiten & Online-Auftritte, KI-Integration, Cloud on Microsoft (Azure, M365, Copilot).
-Preise: Starter €49/Monat, Business €149/Monat, Enterprise individuell.
-Reaktionszeit: 2 Stunden, 24/7 Notfall. Antworte max. 3 Sätze.`,
-        messages: cbHistory
-      })
+function showMainMenu() {
+  addOptions([
+    { label: '📋 Termin buchen / Anfrage stellen', action: () => {
+      addMsg('Gerne! So erreichen Sie uns:<br><br>📞 <strong>+49 162 495 4485</strong><br>✉️ <strong>armen.hovsepyan@armosystems.de</strong><br>📍 Keplerweg 4, 57413 Finnentrop<br><br>Oder nutzen Sie unser <a style="color:#3b82f6;cursor:pointer;text-decoration:underline" onclick="document.getElementById(\'cbWin\').classList.remove(\'open\');showPage(\'contact\')">Kontaktformular</a>.', 'bot');
+      setTimeout(() => { showBackMenu(); }, 400);
+    }},
+    { label: '🚨 Notfall / Störung melden', action: () => {
+      addMsg('Bei Notfällen erreichen Sie uns 24/7:<br><br>📞 <strong>+49 162 495 4485</strong><br><br>Wir reagieren in der Regel innerhalb von <strong>2 Stunden</strong>!', 'bot');
+      setTimeout(() => { showBackMenu(); }, 400);
+    }},
+    { label: '💬 Frage zu Leistungen & Preisen', action: () => {
+      addMsg('Zu welchem Bereich haben Sie Fragen?', 'bot');
+      setTimeout(() => {
+        addGrid2([
+          {label:'Netzwerk & Server', key:'netzwerk'},
+          {label:'Virtualisierung', key:'virtualisierung'},
+          {label:'Firewall & Security', key:'firewall'},
+          {label:'Reparatur & Support', key:'reparatur'},
+          {label:'Cloud & Microsoft', key:'cloud'},
+          {label:'KI-Integration', key:'ki'},
+          {label:'Softwareentwicklung', key:'software'},
+          {label:'Webseiten', key:'webseiten'},
+          {label:'IT-Beratung', key:'beratung'},
+          {label:'Preise & Pakete', key:'preise'}
+        ]);
+      }, 400);
+    }},
+    { label: 'ℹ️ Über ArmoSystems', action: () => {
+      addMsg('ArmoSystems ist Ihr IT-Partner in Finnentrop (Sauerland, NRW).<br><br>👤 <strong>Inhaber:</strong> Armen Hovsepyan — Wirtschaftsinformatiker B.Sc.<br>📍 <strong>Standort:</strong> Keplerweg 4, 57413 Finnentrop<br>📞 <strong>Tel:</strong> +49 162 495 4485<br><br>Wir verbinden <strong>Technologie + Business</strong> für zukunftssichere IT-Lösungen. Persönlich, direkt, ohne Umwege.', 'bot');
+      setTimeout(() => { showBackMenu(); }, 400);
+    }},
+  ]);
+}
+
+function showBackMenu() {
+  addOptions([
+    { label: '🔙 Zurück zum Hauptmenü', action: () => { showMainMenu(); }},
+    { label: '📞 Direkt anrufen', action: () => {
+      addMsg('📞 <strong>+49 162 495 4485</strong><br>Wir freuen uns auf Ihren Anruf!', 'bot');
+    }},
+  ]);
+}
+
+var faqAnswers = {
+  netzwerk: 'Unsere <strong>Netzwerk & Server</strong>-Leistungen:<br><br>- Planung & Installation von LAN/WLAN<br>- Server-Aufbau (Windows, Linux)<br>- Active Directory & Gruppenrichtlinien<br>- Backup-Lösungen & Monitoring<br>- Vor-Ort-Service im Sauerland<br><br>📞 Beratung: <strong>+49 162 495 4485</strong>',
+  virtualisierung: 'Unsere <strong>Virtualisierung</strong>-Leistungen:<br><br>- VMware, Hyper-V, Proxmox<br>- Effiziente Serverkonsolidierung<br>- VM-Migration & Management<br>- Hochverfügbarkeit & Failover<br>- Kostenoptimierung<br><br>📞 Beratung: <strong>+49 162 495 4485</strong>',
+  firewall: 'Unsere <strong>Firewall & Security</strong>-Leistungen:<br><br>- FortiGate, pfSense, Sophos, Cisco<br>- VPN-Lösungen (Site-to-Site, Remote)<br>- IT-Sicherheitskonzepte<br>- Penetrationstests & Audits<br>- 24/7 Monitoring<br><br>📞 Beratung: <strong>+49 162 495 4485</strong>',
+  reparatur: 'Unsere <strong>Reparatur & Support</strong>-Leistungen:<br><br>- Schnelle Diagnose von PCs, Laptops, Servern<br>- Vor-Ort und Remote-Support<br>- Hardware-Austausch & Upgrade<br>- Reaktionszeit: meist <strong>2 Stunden</strong><br>- 24/7 Notfall-Support<br><br>📞 Direkt: <strong>+49 162 495 4485</strong>',
+  cloud: 'Unsere <strong>Cloud & Microsoft</strong>-Leistungen:<br><br>- Microsoft Azure Setup & Migration<br>- Microsoft 365 Administration<br>- Copilot Integration<br>- Cloud-Sicherheit & Compliance<br>- Hybride Infrastrukturen<br><br>📞 Beratung: <strong>+49 162 495 4485</strong>',
+  ki: 'Unsere <strong>KI-Integration</strong>-Leistungen:<br><br>- KI-Potenzialanalyse für Ihr Unternehmen<br>- ChatGPT & Claude API Integration<br>- Prozessautomatisierung mit KI<br>- KI-Schulungen für Ihr Team<br>- ROI-Messung & Erfolgskontrolle<br><br>📞 Beratung: <strong>+49 162 495 4485</strong>',
+  software: 'Unsere <strong>Softwareentwicklung</strong>-Leistungen:<br><br>- Individuelle Web-Applikationen<br>- Backend-Entwicklung & APIs<br>- Datenbank-Design & Optimierung<br>- Wartung & kontinuierliche Updates<br>- Alles aus einer Hand<br><br>📞 Beratung: <strong>+49 162 495 4485</strong>',
+  webseiten: 'Unsere <strong>Webseiten & Online-Auftritte</strong>:<br><br>- Professionelle Unternehmenswebseiten<br>- Landing Pages & One-Pager<br>- Responsive Design (mobil-optimiert)<br>- SEO-Grundoptimierung<br>- Schnelle Ladezeiten<br><br>📞 Beratung: <strong>+49 162 495 4485</strong>',
+  beratung: 'Unsere <strong>Strategische IT-Beratung</strong>:<br><br>- IT-Strategie & Roadmap<br>- Prozessanalyse & Optimierung<br>- Digitale Transformation<br>- Technologie-Auswahl<br>- ROI-Optimierung<br><br>Als Wirtschaftsinformatiker verbinden wir Technik mit Business!<br><br>📞 Beratung: <strong>+49 162 495 4485</strong>',
+  preise: 'Unsere <strong>Pakete</strong>:<br><br>🟢 <strong>Starter — €49/Monat</strong><br>- Basis IT-Support, Remote-Hilfe, E-Mail Support<br><br>🔵 <strong>Business — €149/Monat</strong><br>- Alles aus Starter + Vor-Ort Service, Netzwerk-Management, Strategieberatung, KI-Integration<br><br>🟣 <strong>Enterprise — Individuell</strong><br>- Maßgeschneiderte Lösungen, dedizierter Ansprechpartner, 24/7 Support, SLA-Garantie<br><br>📞 Individuelle Beratung: <strong>+49 162 495 4485</strong>'
+};
+
+function addGrid2(items) {
+  const wrap = document.createElement('div');
+  wrap.className = 'cb-grid';
+  items.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'cb-grid-btn';
+    btn.textContent = item.label;
+    btn.addEventListener('click', () => {
+      wrap.remove();
+      addMsg(item.label, 'user');
+      if(faqAnswers[item.key]) {
+        setTimeout(() => {
+          addMsg(faqAnswers[item.key], 'bot');
+          setTimeout(() => { showBackMenu(); }, 400);
+        }, 300);
+      }
     });
-    const data = await res.json();
-    typing.remove();
-    const reply = data.content?.[0]?.text || 'Entschuldigung, bitte kontaktieren Sie uns direkt unter +49 162 495 4485.';
-    cbHistory.push({role:'assistant', content: reply});
-    addMsg(reply, 'bot');
-  } catch(e) {
-    typing.remove();
-    addMsg('Ein Fehler ist aufgetreten. Bitte rufen Sie uns an: <strong>+49 162 495 4485</strong>', 'bot');
-  }
+    wrap.appendChild(btn);
+  });
+  cbMsgs.appendChild(wrap);
+  cbMsgs.scrollTop = cbMsgs.scrollHeight;
 }
 
 function cbSendMsg() {
@@ -1935,8 +1970,46 @@ function cbSendMsg() {
   if(!text) return;
   cbInp.value = '';
   addMsg(text, 'user');
-  cbHistory.push({role:'user', content: text});
-  askAI(text);
+  
+  // Simple keyword matching
+  var lc = text.toLowerCase();
+  var reply = '';
+  if(lc.includes('preis') || lc.includes('kost') || lc.includes('paket') || lc.includes('price')) {
+    reply = faqAnswers.preise;
+  } else if(lc.includes('netzwerk') || lc.includes('server') || lc.includes('lan') || lc.includes('wlan')) {
+    reply = faqAnswers.netzwerk;
+  } else if(lc.includes('firewall') || lc.includes('sicherheit') || lc.includes('vpn') || lc.includes('security')) {
+    reply = faqAnswers.firewall;
+  } else if(lc.includes('cloud') || lc.includes('azure') || lc.includes('microsoft') || lc.includes('365') || lc.includes('copilot')) {
+    reply = faqAnswers.cloud;
+  } else if(lc.includes('ki') || lc.includes('künstlich') || lc.includes('chatgpt') || lc.includes('automat')) {
+    reply = faqAnswers.ki;
+  } else if(lc.includes('software') || lc.includes('app') || lc.includes('entwicklung') || lc.includes('api')) {
+    reply = faqAnswers.software;
+  } else if(lc.includes('webseite') || lc.includes('website') || lc.includes('homepage') || lc.includes('landing')) {
+    reply = faqAnswers.webseiten;
+  } else if(lc.includes('virtual') || lc.includes('proxmox') || lc.includes('vmware') || lc.includes('hyper')) {
+    reply = faqAnswers.virtualisierung;
+  } else if(lc.includes('reparatur') || lc.includes('support') || lc.includes('hilfe') || lc.includes('kaputt') || lc.includes('defekt')) {
+    reply = faqAnswers.reparatur;
+  } else if(lc.includes('berat') || lc.includes('strateg') || lc.includes('consult')) {
+    reply = faqAnswers.beratung;
+  } else if(lc.includes('termin') || lc.includes('kontakt') || lc.includes('anruf') || lc.includes('mail') || lc.includes('treffen')) {
+    reply = 'Gerne! So erreichen Sie uns:<br><br>📞 <strong>+49 162 495 4485</strong><br>✉️ <strong>armen.hovsepyan@armosystems.de</strong><br>📍 Keplerweg 4, 57413 Finnentrop';
+  } else if(lc.includes('notfall') || lc.includes('störung') || lc.includes('dringend') || lc.includes('urgent')) {
+    reply = 'Bei Notfällen erreichen Sie uns 24/7:<br><br>📞 <strong>+49 162 495 4485</strong><br><br>Wir reagieren in der Regel innerhalb von <strong>2 Stunden</strong>!';
+  } else if(lc.includes('hallo') || lc.includes('hi') || lc.includes('hey') || lc.includes('guten')) {
+    reply = 'Hallo! 😊 Schön, dass Sie bei ArmoSystems sind. Wie kann ich Ihnen helfen?';
+  } else if(lc.includes('danke') || lc.includes('thanks')) {
+    reply = 'Gerne! Wenn Sie weitere Fragen haben, bin ich für Sie da. 😊';
+  } else {
+    reply = 'Vielen Dank für Ihre Nachricht! Für eine individuelle Beratung erreichen Sie uns am besten direkt:<br><br>📞 <strong>+49 162 495 4485</strong><br>✉️ <strong>armen.hovsepyan@armosystems.de</strong><br><br>Wir melden uns schnellstmöglich bei Ihnen!';
+  }
+  
+  setTimeout(() => {
+    addMsg(reply, 'bot');
+    setTimeout(() => { showBackMenu(); }, 400);
+  }, 500);
 }
 </script>
 
